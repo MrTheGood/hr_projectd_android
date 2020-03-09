@@ -195,3 +195,7 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.gitignore.io/api/linux,macos,windows,androidstudio
+
+.idea/runConfigurations.xml
+.idea/gradle.xml
+.idea/caches
