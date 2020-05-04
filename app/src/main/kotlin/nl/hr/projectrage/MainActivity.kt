@@ -2,6 +2,7 @@ package nl.hr.projectrage
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.speech.RecognitionListener
@@ -20,8 +21,9 @@ class MainActivity : AppCompatActivity() {
         const val requestAudio = 1
     }
 
-    private val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-    private val speechRecognizerIntent = CodeWordListener {
+    private val sharedPreferences by lazy { application.getSharedPreferences("App", 0) }
+    private val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+    private val speechRecognizerIntent = CodeWordListener(sharedPreferences) {
         Log.wtf("tag", "match")
         root.setBackgroundColor(0x00ff00)
     }
@@ -30,6 +32,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         speechRecognizer.setRecognitionListener(speechRecognizerIntent)
+
+        settingsButton.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     override fun onStart() {
@@ -58,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private fun startAudioRecording() {
         val speachIntent = RecognizerIntent.getVoiceDetailsIntent(this)
         //set speech language to something else than Local.default()
-        speachIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl");
+        speachIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl")
         speechRecognizer.startListening(speachIntent)
     }
 
@@ -69,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class CodeWordListener(val onMatch: (word: String) -> Unit) : RecognitionListener {
+class CodeWordListener(val sharedPreferences: SharedPreferences, val onMatch: (word: String) -> Unit) : RecognitionListener {
     override fun onReadyForSpeech(p0: Bundle?) {}
     override fun onRmsChanged(p0: Float) {}
     override fun onBufferReceived(p0: ByteArray?) {}
@@ -82,7 +88,7 @@ class CodeWordListener(val onMatch: (word: String) -> Unit) : RecognitionListene
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
         for (res in results) {
             val temp = res ?: "null"
-            if (temp.toLowerCase(Locale.ROOT) == "kiwi") {
+            if (temp.toLowerCase(Locale.ROOT) == sharedPreferences.getString("codeword", "kiwi")) {
                 onMatch(temp)
             }
             Log.wtf("tag", res ?: "null")
