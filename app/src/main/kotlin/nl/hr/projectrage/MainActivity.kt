@@ -3,51 +3,33 @@ package nl.hr.projectrage
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.LayoutInflater
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_main.*
-import nl.hr.projectrage.MainActivity.AudioConfig.audioFormat
-import nl.hr.projectrage.MainActivity.AudioConfig.channelConfig
-import nl.hr.projectrage.MainActivity.AudioConfig.minBufferSize
-import nl.hr.projectrage.MainActivity.AudioConfig.sampleRateInHz
 import java.util.*
-import kotlin.concurrent.timerTask
-import kotlin.math.abs
 
 
 class MainActivity : AppCompatActivity() {
-    object AudioConfig {
-        const val sampleRateInHz = 8000
-        const val channelConfig = AudioFormat.CHANNEL_IN_MONO
-        const val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-        val minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat)
-    }
-
     companion object {
         const val requestAudio = 1
     }
 
-
-    private val audioRecord by lazy { AudioRecord(MediaRecorder.AudioSource.MIC, sampleRateInHz, channelConfig, audioFormat, minBufferSize) }
-    private val timer by lazy { Timer() }
-    private val handler = Handler(Looper.getMainLooper())
+    private val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+    private val speechRecognizerIntent = CodeWordListener {
+        Log.wtf("tag", "match")
+        root.setBackgroundColor(0x00ff00)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        root.removeAllViews()
-        for (i in 0..minBufferSize) {
-            LayoutInflater.from(this).inflate(R.layout.thing, root, true)
-        }
+        speechRecognizer.setRecognitionListener(speechRecognizerIntent)
     }
 
     override fun onStart() {
@@ -74,25 +56,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startAudioRecording() {
-        audioRecord.startRecording()
-
-        timer.scheduleAtFixedRate(timerTask {
-            val buffer = ShortArray(minBufferSize)
-            audioRecord.read(buffer, 0, minBufferSize)
-            handler.post {
-                var i = 0
-                buffer.forEach {
-                    root.getChildAt(i++).apply { layoutParams = layoutParams.apply { height = abs(it.toInt()) } }
-                }
-            }
-        }, 0, 50)
+        val speachIntent = RecognizerIntent.getVoiceDetailsIntent(this)
+        //set speech language to something else than Local.default()
+        speachIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl");
+        speechRecognizer.startListening(speachIntent)
     }
 
 
     override fun onStop() {
         super.onStop()
+        speechRecognizer.destroy()
+    }
+}
 
-        audioRecord.stop()
-        timer.cancel()
+class CodeWordListener(val onMatch: (word: String) -> Unit) : RecognitionListener {
+    override fun onReadyForSpeech(p0: Bundle?) {}
+    override fun onRmsChanged(p0: Float) {}
+    override fun onBufferReceived(p0: ByteArray?) {}
+    override fun onPartialResults(p0: Bundle?) {}
+    override fun onEvent(p0: Int, p1: Bundle?) {}
+    override fun onBeginningOfSpeech() {}
+    override fun onEndOfSpeech() {}
+    override fun onError(p0: Int) {}
+    override fun onResults(p0: Bundle?) {
+        val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
+        for (res in results) {
+            val temp = res ?: "null"
+            if (temp.toLowerCase(Locale.ROOT) == "kiwi") {
+                onMatch(temp)
+            }
+            Log.wtf("tag", res ?: "null")
+        }
     }
 }
