@@ -21,11 +21,10 @@ class MainActivity : AppCompatActivity() {
         const val requestAudio = 1
     }
 
-    private val sharedPreferences by lazy { application.getSharedPreferences("App", 0) }
-    private val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
-    private val speechRecognizerIntent = CodeWordListener(sharedPreferences) {
-        Log.wtf("tag", "match")
-        root.setBackgroundColor(0x00ff00)
+    private val sharedPreferences by lazy { getSharedPreferences("App", 0) }
+    private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(this) }
+    private val speechRecognizerIntent by lazy {
+        CodeWordListener(sharedPreferences) { root.setBackgroundColor(0x00ff00) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
