@@ -2,12 +2,12 @@ package nl.hr.projectrage
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,16 +20,22 @@ class MainActivity : AppCompatActivity() {
         const val requestAudio = 1
     }
 
-    private val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-    private val speechRecognizerIntent = CodeWordListener {
-        Log.wtf("tag", "match")
-        root.setBackgroundColor(0x00ff00)
+    private val sharedPreferences by lazy { getSharedPreferences("App", 0) }
+    private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(this) }
+    private val speechRecognizerIntent by lazy {
+        CodeWordListener(sharedPreferences) { matches ->
+            root.setBackgroundResource(if (matches) android.R.color.holo_green_light else android.R.color.holo_red_light)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         speechRecognizer.setRecognitionListener(speechRecognizerIntent)
+
+        settingsButton.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     override fun onStart() {
@@ -58,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private fun startAudioRecording() {
         val speachIntent = RecognizerIntent.getVoiceDetailsIntent(this)
         //set speech language to something else than Local.default()
-        speachIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl");
+        speachIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl")
         speechRecognizer.startListening(speachIntent)
     }
 
@@ -69,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class CodeWordListener(val onMatch: (word: String) -> Unit) : RecognitionListener {
+class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (match: Boolean) -> Unit) : RecognitionListener {
     override fun onReadyForSpeech(p0: Bundle?) {}
     override fun onRmsChanged(p0: Float) {}
     override fun onBufferReceived(p0: ByteArray?) {}
@@ -80,12 +86,8 @@ class CodeWordListener(val onMatch: (word: String) -> Unit) : RecognitionListene
     override fun onError(p0: Int) {}
     override fun onResults(p0: Bundle?) {
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
-        for (res in results) {
-            val temp = res ?: "null"
-            if (temp.toLowerCase(Locale.ROOT) == "kiwi") {
-                onMatch(temp)
-            }
-            Log.wtf("tag", res ?: "null")
-        }
+        val codeword = sharedPreferences.getString("codeword", "kiwi")
+
+        onResult(results.any { it?.toLowerCase() == codeword })
     }
 }
