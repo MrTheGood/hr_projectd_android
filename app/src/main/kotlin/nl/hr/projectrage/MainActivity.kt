@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,7 +23,9 @@ class MainActivity : AppCompatActivity() {
     private val sharedPreferences by lazy { getSharedPreferences("App", 0) }
     private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(this) }
     private val speechRecognizerIntent by lazy {
-        CodeWordListener(sharedPreferences) { root.setBackgroundColor(0x00ff00) }
+        CodeWordListener(sharedPreferences) { matches ->
+            root.setBackgroundResource(if (matches) android.R.color.holo_green_light else android.R.color.holo_red_light)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class CodeWordListener(val sharedPreferences: SharedPreferences, val onMatch: (word: String) -> Unit) : RecognitionListener {
+class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (match: Boolean) -> Unit) : RecognitionListener {
     override fun onReadyForSpeech(p0: Bundle?) {}
     override fun onRmsChanged(p0: Float) {}
     override fun onBufferReceived(p0: ByteArray?) {}
@@ -85,12 +86,8 @@ class CodeWordListener(val sharedPreferences: SharedPreferences, val onMatch: (w
     override fun onError(p0: Int) {}
     override fun onResults(p0: Bundle?) {
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
-        for (res in results) {
-            val temp = res ?: "null"
-            if (temp.toLowerCase(Locale.ROOT) == sharedPreferences.getString("codeword", "kiwi")) {
-                onMatch(temp)
-            }
-            Log.wtf("tag", res ?: "null")
-        }
+        val codeword = sharedPreferences.getString("codeword", "kiwi")
+
+        onResult(results.any { it?.toLowerCase() == codeword })
     }
 }
