@@ -86,8 +86,8 @@ class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (
     override fun onError(p0: Int) {}
     override fun onResults(p0: Bundle?) {
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
-        val codeword = sharedPreferences.getString("codeword", "kiwi")
+        val codeword = sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()
 
-        onResult(results.any { it?.toLowerCase() == codeword })
+        onResult(results.any { it?.toLowerCase()?.contains(codeword) ?: false })
     }
 }
