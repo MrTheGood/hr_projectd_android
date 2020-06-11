@@ -28,7 +28,7 @@ class WordAnalysis(
 
     private val words = ArrayList<String>()
 
-    fun devideIntoSyllables(word: String): List<String> {
+    fun divideIntoSyllables(word: String): List<String> {
         if (!isValidWord(word))
             error("Not a valid word")
 
@@ -50,8 +50,12 @@ class WordAnalysis(
         )
     }
 
-    fun devideIntoWords() {
-        TODO()
+    fun divideIntoWords(word: String) {
+        dictionary.forEach{
+            if(word.contains(it)){
+                words.add(it)
+            }
+        }
     }
 
     fun divideIntoPhonetics() {
