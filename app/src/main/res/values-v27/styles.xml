@@ -1,19 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!---->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!---->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryVariant</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>r
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
 
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
 
-
         <item name="android:windowBackground">@color/colorSurface</item>
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        <item name="android:windowLightNavigationBar">@bool/windowLightNavigationBar</item>
+        <item name="android:windowLightStatusBar">@bool/windowLightStatusBar</item>
     </style>
 
 </resources>

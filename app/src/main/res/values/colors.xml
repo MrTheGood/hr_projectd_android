@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <!-- Main Colours -->
+    <color name="colorPrimary">#67B5F8</color>
+    <color name="colorPrimaryVariant">#51a3cc</color>
+    <color name="colorOnPrimary">#faffff</color>
+
+    <color name="colorSecondary">#FFED5A</color>
+    <color name="colorSecondaryVariant">#d9c94b</color>
+    <color name="colorOnSecondary">#000600</color>
+
+
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="statusBarColor">#80ffffff</color>
+    <color name="navigationBarColor">#BBffffff</color>
+    <bool name="windowLightNavigationBar">true</bool>
+    <bool name="windowLightStatusBar">true</bool>
 </resources>
