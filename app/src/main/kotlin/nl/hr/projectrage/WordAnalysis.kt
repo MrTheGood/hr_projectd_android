@@ -1,53 +1,67 @@
 package nl.hr.projectrage
 
+import android.content.res.Resources
+import org.json.JSONArray
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
 class WordAnalysis(
+    res: Resources,
     private var localisation: String = Locale.getDefault().displayLanguage
 ) {
-    private val dictionary = listOf<String>(
+    private val dictionary: List<String>
 
-    )
+    init {
+        try {
+            val rawJson = res.openRawResource(R.raw.dictionary).bufferedReader().use { it.readText() }
+            val jsonArray = JSONArray(rawJson)
+
+            val tmpList = ArrayList<String>()
+            for (i in 0..jsonArray.length())
+                tmpList.add(jsonArray[i] as? String ?: continue)
+            dictionary = tmpList
+        } catch (e: IOException) {
+            TODO("Well, shit.. Error not handled by prototype")
+        }
+    }
 
     private val words = ArrayList<String>()
 
-    fun dividIntoSyllables(word: String): List<String> {
-        if(isValidWord(word)){
-            val syllablePattern = """/(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)(?<consonances>[^\k<vowels>]|\b)*\k<vowels>/i""".toRegex()
-            val matchSyllables = syllablePattern.find(word)
+    fun devideIntoSyllables(word: String): List<String> {
+        if (!isValidWord(word))
+            error("Not a valid word")
 
-            val pattern =
-                if (matchSyllables == null)"""/.*/i""".toRegex()
-                else if(matchSyllables.value.length > 3) """/((?<consonances>[^\k<vowels>])*(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u))(.*)/i""".toRegex()
-                else """/$((?<consonances>[^\k<vowels>])(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)\k<consonances>)(.*)/i""".toRegex()
+        val syllablePattern = """/(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)(?<consonances>[^\k<vowels>]|\b)*\k<vowels>/i""".toRegex()
+        val matchSyllables = syllablePattern.find(word)
+
+        val pattern =
+            when {
+                matchSyllables == null -> """/.*/i""".toRegex()
+                matchSyllables.value.length > 3 -> """/((?<consonances>[^\k<vowels>])*(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u))(.*)/i""".toRegex()
+                else -> """/$((?<consonances>[^\k<vowels>])(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)\k<consonances>)(.*)/i""".toRegex()
+            }
 
 
-            val match = pattern.find(word)!!
-            return listOf(
-                match.groupValues[0],
-                match.groupValues[3]
-            )
-        }else{
-            throw Error("not a valid word")
-        }
+        val match = pattern.find(word)!!
+        return listOf(
+            match.groupValues[0],
+            match.groupValues[3]
+        )
     }
 
     fun devideIntoWords() {
         TODO()
     }
 
-    fun divideIntoPhonetics(){
+    fun divideIntoPhonetics() {
 
     }
 
-    private fun isValidWord(word: String):Boolean{
+    private fun isValidWord(word: String): Boolean {
         val vowelPattern = """(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)""".toRegex()
         val match = vowelPattern.find(word)
-        if(match != null){
-            return true
-        }
-        return false
+        return match != null
     }
 }
 
