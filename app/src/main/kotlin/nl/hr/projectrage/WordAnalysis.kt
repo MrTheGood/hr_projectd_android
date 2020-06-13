@@ -50,7 +50,7 @@ class WordAnalysis(res: Resources) {
             val match = pattern.find(word) ?: run {
                 //Fixme: Nearly always it takes pattern "/.*/i" that does not manage to match anything
                 // Therefore, this error occurs a lot.
-                Log.wtf("error", "No match found with syllablePattern: $syllablePattern, or pattern: ${pattern.pattern}")
+                Log.wtf("error", "No match found with pattern: ${pattern.pattern}")
                 error("Failed to determine quality")
             }
             syllables.add(match.groupValues[0])

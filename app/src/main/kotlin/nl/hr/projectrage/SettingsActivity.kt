@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
 
         input.doAfterTextChanged {
             try {
-                qualityIndicator.text = "Codeword Quality: ${wordAnalysis.getScore(it.toString())}"
+                qualityIndicator.text = "Codeword Quality: ${wordAnalysis.getScore(it.toString().toLowerCase())}"
             } catch (e: IllegalStateException) {
                 qualityIndicator.text = e.message.takeIf {
                     it in listOf("Not a valid word", "Failed to determine quality")
