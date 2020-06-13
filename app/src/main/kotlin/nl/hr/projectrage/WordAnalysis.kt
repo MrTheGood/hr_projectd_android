@@ -32,6 +32,8 @@ class WordAnalysis(res: Resources) {
 
         val syllablePattern = """/$vowels$consonances$vowels/i""".toRegex()
 
+
+        Log.wtf("test", "word:$word,divideIntoWords:${divideIntoWords(word)}")
         divideIntoWords(word).forEach {
             val matchSyllables = syllablePattern.find(it)
 
