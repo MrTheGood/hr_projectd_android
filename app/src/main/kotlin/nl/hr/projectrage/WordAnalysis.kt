@@ -27,7 +27,10 @@ class WordAnalysis(res: Resources) {
         if (!isValidWord(word))
             error("Not a valid word")
 
-        val syllablePattern = """/(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)(?<consonances>[^\\k<vowels>]|\\b)*\\k<vowels>/i""".toRegex()
+        val vowels = """(aa|a|oe|ie|ee|i|e|oo|o|uu|u)"""
+        val consonances = """([^$vowels])"""
+
+        val syllablePattern = """/$vowels$consonances$vowels/i""".toRegex()
 
         divideIntoWords(word).forEach {
             val matchSyllables = syllablePattern.find(it)
@@ -35,8 +38,8 @@ class WordAnalysis(res: Resources) {
             val pattern =
                 when {
                     matchSyllables == null -> """/.*/i""".toRegex()
-                    matchSyllables.value.length > 3 -> """/((?<consonances>[^\\k<vowels>])*(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u))(.*)/i""".toRegex()
-                    else -> """/$((?<consonances>[^\\k<vowels>])(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)\\k<consonances>)(.*)/i""".toRegex()
+                    matchSyllables.value.length > 3 -> """/($consonances)*($vowels)(.*)/i""".toRegex()
+                    else -> """/$($consonances$vowels$consonances)(.*)/i""".toRegex()
                 }
 
 
