@@ -35,6 +35,10 @@ android {
         }
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     sourceSets["main"].java.srcDir("src/main/kotlin")
 }
 
@@ -46,4 +50,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
 
     implementation("com.google.android.material:material:1.1.0")
+
+    testImplementation("junit:junit:4.12")
 }
