@@ -5,9 +5,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private val speechRecognizer by lazy { SpeechRecognizer.createSpeechRecognizer(this) }
     private val speechRecognizerIntent by lazy {
         CodeWordListener(sharedPreferences) { matches ->
-            root.setBackgroundResource(if (matches) android.R.color.holo_green_light else android.R.color.holo_red_light)
+            displayResult(matches)
         }
     }
 
@@ -36,13 +39,15 @@ class MainActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+        recordButton.setOnClickListener {
+            startRecordingButtonPressed()
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), requestAudio)
-        } else startAudioRecording()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,8 +61,6 @@ class MainActivity : AppCompatActivity() {
                     .setCancelable(false)
                     .setPositiveButton("OK") { _, _ -> TODO() }
                     .show()
-
-            startAudioRecording()
         }
     }
 
@@ -73,6 +76,30 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         speechRecognizer.destroy()
     }
+
+
+    // UI
+    private fun startRecordingButtonPressed() {
+        startAudioRecording()
+        recordButton.visibility = View.INVISIBLE
+        recordingProgress.visibility = View.VISIBLE
+        recordingProgressHint.visibility = View.VISIBLE
+        recordingProgressHint.text = "Say '${sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()}'"
+    }
+
+    private fun displayResult(matches: Boolean) {
+        resultIcon.setImageResource(if (matches) R.drawable.ic_success else R.drawable.ic_failure)
+        Toast.makeText(this, if (matches) "Codeword detected!" else "Codeword not detected", Toast.LENGTH_LONG).show()
+
+        resultIcon.visibility = View.VISIBLE
+        recordingProgress.visibility = View.GONE
+        recordingProgressHint.visibility = View.GONE
+
+        Handler().postDelayed({
+            resultIcon.visibility = View.GONE
+            recordButton.visibility = View.VISIBLE
+        }, 2500)
+    }
 }
 
 class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (match: Boolean) -> Unit) : RecognitionListener {
@@ -83,11 +110,13 @@ class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (
     override fun onEvent(p0: Int, p1: Bundle?) {}
     override fun onBeginningOfSpeech() {}
     override fun onEndOfSpeech() {}
-    override fun onError(p0: Int) {}
+    override fun onError(p0: Int) {
+        onResult(false)
+    }
     override fun onResults(p0: Bundle?) {
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
-        val codeword = sharedPreferences.getString("codeword", "kiwi")
+        val codeword = sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()
 
-        onResult(results.any { it?.toLowerCase() == codeword })
+        onResult(results.any { it?.toLowerCase()?.contains(codeword) ?: false })
     }
 }
