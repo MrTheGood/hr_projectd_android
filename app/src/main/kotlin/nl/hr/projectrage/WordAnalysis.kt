@@ -1,6 +1,7 @@
 package nl.hr.projectrage
 
 import android.content.res.Resources
+import android.util.Log
 import org.json.JSONArray
 import java.io.IOException
 
@@ -13,7 +14,7 @@ class WordAnalysis(res: Resources) {
             val jsonArray = JSONArray(rawJson)
 
             val tmpList = ArrayList<String>()
-            for (i in 0..jsonArray.length())
+            for (i in 0 until jsonArray.length())
                 tmpList.add(jsonArray[i] as? String ?: continue)
             dictionary = tmpList
         } catch (e: IOException) {
@@ -26,7 +27,7 @@ class WordAnalysis(res: Resources) {
         if (!isValidWord(word))
             error("Not a valid word")
 
-        val syllablePattern = """/(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)(?<consonances>[^\k<vowels>]|\b)*\k<vowels>/i""".toRegex()
+        val syllablePattern = """/(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)(?<consonances>[^\\k<vowels>]|\\b)*\\k<vowels>/i""".toRegex()
 
         divideIntoWords(word).forEach {
             val matchSyllables = syllablePattern.find(it)
@@ -34,12 +35,17 @@ class WordAnalysis(res: Resources) {
             val pattern =
                 when {
                     matchSyllables == null -> """/.*/i""".toRegex()
-                    matchSyllables.value.length > 3 -> """/((?<consonances>[^\k<vowels>])*(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u))(.*)/i""".toRegex()
-                    else -> """/$((?<consonances>[^\k<vowels>])(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)\k<consonances>)(.*)/i""".toRegex()
+                    matchSyllables.value.length > 3 -> """/((?<consonances>[^\\k<vowels>])*(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u))(.*)/i""".toRegex()
+                    else -> """/$((?<consonances>[^\\k<vowels>])(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)\\k<consonances>)(.*)/i""".toRegex()
                 }
 
 
-            val match = pattern.find(word)!!
+            val match = pattern.find(word) ?: run {
+                //Fixme: Nearly always it takes pattern "/.*/i" that does not manage to match anything
+                // Therefore, this error occurs a lot.
+                Log.wtf("error", "No match found with pattern: ${pattern.pattern}")
+                error("Failed to determine quality")
+            }
             syllables.add(match.groupValues[0])
             syllables.add(match.groupValues[3])
         }
@@ -47,10 +53,10 @@ class WordAnalysis(res: Resources) {
         return syllables
     }
 
-    fun divideIntoWords(word: String) =
+    private fun divideIntoWords(word: String) =
         dictionary.filter { word.contains(it) }
 
-    fun divideIntoPhonetics(syllables: List<String>): List<Klanken> {
+    private fun divideIntoPhonetics(syllables: List<String>): List<Klanken> {
         val phonetics = ArrayList<Klanken>()
 
         val pattern = klankenList.toPhoneticsRegexPattern()
@@ -69,15 +75,11 @@ class WordAnalysis(res: Resources) {
         return totalPoints / phonetics.size
     }
 
-    fun getScore() {
-        val score = calcScore("kiwi")
+    fun getScore(word: String) = calcScore(word).let { score ->
         when {
-            score <= 33 -> {
-            }
-            score <= 66 -> {
-            }
-            else -> {
-            }
+            score <= 33 -> "bad"
+            score <= 66 -> "average"
+            else -> "good"
         }
     }
 
