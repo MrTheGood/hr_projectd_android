@@ -38,11 +38,12 @@ class WordAnalysis(res: Resources) {
         if (words.isEmpty()) error("Not a valid word")
         words.forEach {
             val matchSyllables = syllablePattern.find(it)
+            val fullMatch = matchSyllables?.groupValues?.firstOrNull()
 
             val pattern =
                 when {
-                    matchSyllables == null -> """.*""".toRegex()
-                    matchSyllables.value.length > 3 -> """($consonances*($vowels))(.*)""".toRegex()
+                    fullMatch == null -> """.*""".toRegex()
+                    fullMatch.length == 3 -> """($consonances*($vowels))(.*)""".toRegex()
                     else -> """$($consonances$vowels$consonances)(.*)""".toRegex()
                 }
 
@@ -53,8 +54,13 @@ class WordAnalysis(res: Resources) {
                 Log.wtf("error", "No match found with pattern: ${pattern.pattern}")
                 error("Failed to determine quality")
             }
-            syllables.add(match.groupValues[0])
-            syllables.add(match.groupValues[3])
+
+            if (match.groupValues.size == 1)
+                syllables.add(match.groupValues[0])
+            else {
+                syllables.add(match.groupValues[1])
+                syllables.add(match.groupValues[4])
+            }
         }
 
         return syllables
