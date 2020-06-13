@@ -30,7 +30,7 @@ class WordAnalysis(res: Resources) {
         val vowels = """(aa|a|oe|ie|ee|i|e|oo|o|uu|u)"""
         val consonances = """([^$vowels])"""
 
-        val syllablePattern = """/$vowels$consonances$vowels/i""".toRegex()
+        val syllablePattern = """/$vowels$consonances+$vowels/i""".toRegex()
 
 
         Log.wtf("test", "word:$word,divideIntoWords:${divideIntoWords(word)}")
