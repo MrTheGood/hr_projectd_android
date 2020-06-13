@@ -30,7 +30,7 @@ class WordAnalysis(res: Resources) {
         val vowels = """(aa|a|oe|ie|ee|i|e|oo|o|uu|u)"""
         val consonances = """([^$vowels])"""
 
-        val syllablePattern = """/$vowels$consonances+$vowels/i""".toRegex()
+        val syllablePattern = """$vowels$consonances+$vowels""".toRegex()
 
 
         Log.wtf("test", "word:$word,divideIntoWords:${divideIntoWords(word)}")
@@ -39,9 +39,9 @@ class WordAnalysis(res: Resources) {
 
             val pattern =
                 when {
-                    matchSyllables == null -> """/.*/i""".toRegex()
-                    matchSyllables.value.length > 3 -> """/($consonances*($vowels))(.*)/i""".toRegex()
-                    else -> """/$($consonances$vowels$consonances)(.*)/i""".toRegex()
+                    matchSyllables == null -> """.*""".toRegex()
+                    matchSyllables.value.length > 3 -> """($consonances*($vowels))(.*)""".toRegex()
+                    else -> """$($consonances$vowels$consonances)(.*)""".toRegex()
                 }
 
 
