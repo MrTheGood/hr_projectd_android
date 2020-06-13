@@ -40,7 +40,7 @@ class WordAnalysis(res: Resources) {
             val pattern =
                 when {
                     matchSyllables == null -> """/.*/i""".toRegex()
-                    matchSyllables.value.length > 3 -> """/($consonances)*($vowels)(.*)/i""".toRegex()
+                    matchSyllables.value.length > 3 -> """/($consonances*($vowels))(.*)/i""".toRegex()
                     else -> """/$($consonances$vowels$consonances)(.*)/i""".toRegex()
                 }
 
