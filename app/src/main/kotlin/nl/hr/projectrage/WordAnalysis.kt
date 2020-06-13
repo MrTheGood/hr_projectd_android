@@ -3,14 +3,8 @@ package nl.hr.projectrage
 import android.content.res.Resources
 import org.json.JSONArray
 import java.io.IOException
-import java.util.*
-import java.util.function.Consumer
-import kotlin.collections.ArrayList
 
-class WordAnalysis(
-    res: Resources,
-    private var localisation: String = Locale.getDefault().displayLanguage
-) {
+class WordAnalysis(res: Resources) {
     private val dictionary: List<String>
 
     init {
@@ -26,17 +20,15 @@ class WordAnalysis(
             TODO("Well, shit.. Error not handled by prototype")
         }
     }
-    private
 
-    fun divideIntoSyllables(word: String): ArrayList<String> {
+    private fun divideIntoSyllables(word: String): List<String> {
         val syllables = ArrayList<String>()
         if (!isValidWord(word))
             error("Not a valid word")
 
         val syllablePattern = """/(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)(?<consonances>[^\k<vowels>]|\b)*\k<vowels>/i""".toRegex()
 
-        val words = divideIntoWords(word)
-        words.forEach {
+        divideIntoWords(word).forEach {
             val matchSyllables = syllablePattern.find(it)
 
             val pattern =
@@ -48,80 +40,50 @@ class WordAnalysis(
 
 
             val match = pattern.find(word)!!
-            return ArrayList(
-                listOf(
-                    match.groupValues[0],
-                    match.groupValues[3]
-                )
-            )
+            syllables.add(match.groupValues[0])
+            syllables.add(match.groupValues[3])
         }
+
+        return syllables
     }
 
-    fun divideIntoWords(word: String):ArrayList<String> {
-        val words = ArrayList<String>()
-        dictionary.forEach{
-            if(word.contains(it)){
-                words.add(it)
-            }
-        }
-        return words
-    }
+    fun divideIntoWords(word: String) =
+        dictionary.filter { word.contains(it) }
 
-    fun divideIntoPhonetics(syllables: ArrayList<String>):ArrayList<Klanken> {
+    fun divideIntoPhonetics(syllables: List<String>): List<Klanken> {
         val phonetics = ArrayList<Klanken>()
-        var patternString = """"""
-        for ((index, klank) in klankenList.withIndex()){
-            if(index == 1){
-                patternString += "("
-            }
-            patternString += klank.klank + "|"
-            if(index == klankenList.size -1){
-                patternString += ")+"
-            }
-        }
-        val pattern = patternString.toRegex()
-        syllables.forEach {
-            val matches = pattern.find(it)!!
-            matches.groupValues.forEach {
-                val match = it
-                val phonetic = klankenList.find{
-                    it.klank.equals(match)
-                }
-                if (phonetic != null){
-                    phonetics.add(phonetic)
-                }
+
+        val pattern = klankenList.toPhoneticsRegexPattern()
+        syllables.forEach { syllable ->
+            pattern.find(syllable)!!.groupValues.forEach { match ->
+                klankenList.find { it.klank == match }?.let { phonetics.add(it) }
             }
         }
         return phonetics
     }
 
-    fun calcScore(word:String):Double{
+    private fun calcScore(word: String): Double {
         val syllables = divideIntoSyllables(word)
         val phonetics = divideIntoPhonetics(syllables)
-        var totalPoints = 0
-        phonetics.forEach {
-            totalPoints += it.score
-        }
-        return totalPoints.toDouble()/phonetics.size
+        val totalPoints = phonetics.sumBy { it.score }.toDouble()
+        return totalPoints / phonetics.size
     }
 
-    fun getScore(){
+    fun getScore() {
         val score = calcScore("kiwi")
-        if(score <= 33){
-
-        }
-        else if (score > 33 && score <= 66){
-
-        }
-        else{
-
+        when {
+            score <= 33 -> {
+            }
+            score <= 66 -> {
+            }
+            else -> {
+            }
         }
     }
 
     private fun isValidWord(word: String): Boolean {
         val vowelPattern = """(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)""".toRegex()
-        val match = vowelPattern.find(word)
-        return match != null
+        return vowelPattern.find(word) != null
     }
 }
 
@@ -165,5 +127,12 @@ val klankenList = listOf(
     Klanken("ä", "uh", 72),
     Klanken("Open_back_rounded_vowel", "oh", 50),
     Klanken("ç", "ch", 90),
-    Klanken("ɳ", "na",70)
+    Klanken("ɳ", "na", 70)
 )
+
+fun List<Klanken>.toPhoneticsRegexPattern() =
+    StringBuilder("(").also { pattern ->
+        for ((i, it) in this.withIndex())
+            pattern.append(it.klank + "|".takeIf { i != klankenList.size - 1 })
+        pattern.append(")+")
+    }.toString().toRegex()
