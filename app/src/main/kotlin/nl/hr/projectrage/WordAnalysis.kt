@@ -91,7 +91,7 @@ class WordAnalysis(res: Resources) {
     }
 
     private fun isValidWord(word: String): Boolean {
-        val vowelPattern = """(?<vowels>aa|a|oe|ie|ee|i|e|oo|o|uu|u)""".toRegex()
+        val vowelPattern = """(aa|a|oe|ie|ee|i|e|oo|o|uu|u)""".toRegex()
         return vowelPattern.find(word) != null
     }
 }
