@@ -9,43 +9,101 @@
     tools:context=".SettingsActivity"
     >
 
-    <EditText
-        android:id="@+id/input"
+    <TextView
+        android:id="@+id/titleTextView"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Settings"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/generalHeadlineTextView"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"
+        android:text="General Settings"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?dividerHorizontal"
+        app:layout_constraintTop_toTopOf="@id/restartTutorialButton"
+        />
+
+    <TextView
+        android:id="@+id/restartTutorialButton"
+        style="@style/TextAppearance.MaterialComponents.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:foreground="?selectableItemBackground"
+        android:padding="16dp"
+        android:text="Restart Tutorial"
+        app:layout_constraintTop_toBottomOf="@id/generalHeadlineTextView"
+        />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?dividerHorizontal"
+        app:layout_constraintTop_toBottomOf="@id/restartTutorialButton"
+        />
+
+    <TextView
+        android:id="@+id/codewordHeadlineTextView"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"
+        android:text="Codeword Settings"
+        app:layout_constraintTop_toBottomOf="@id/restartTutorialButton"
+        />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="16dp"
-        android:hint="Text trigger"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:hint="Codeword"
+        app:helperText="Codewoord Quality: Good"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".4"
-        />
+        app:layout_constraintTop_toBottomOf="@id/codewordHeadlineTextView"
+        >
 
-    <TextView
-        android:id="@+id/qualityIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textColor="#000"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input"
-        tools:text="Codeword Quality: Good"
-        />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/confirmButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Confirm"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/qualityIndicator"
+        android:layout_marginTop="8dp"
+        android:text="Confirm Codeword"
+        app:layout_constraintEnd_toEndOf="@id/inputLayout"
+        app:layout_constraintTop_toBottomOf="@id/inputLayout"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
