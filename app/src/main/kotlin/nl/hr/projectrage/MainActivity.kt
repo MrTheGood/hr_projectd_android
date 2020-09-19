@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -35,6 +36,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         speechRecognizer.setRecognitionListener(speechRecognizerIntent)
+
+
+        val hasShownTutorial = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hasShownTutorial", false)
+        if (!hasShownTutorial) {
+            val intent = Intent(this, OnboardingActivity::class.java)
+            intent.putExtra("startMainActivity", true)
+            startActivity(intent)
+            finish()
+        }
+
 
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -113,6 +124,7 @@ class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (
     override fun onError(p0: Int) {
         onResult(false)
     }
+
     override fun onResults(p0: Bundle?) {
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
         val codeword = sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()
