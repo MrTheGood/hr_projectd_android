@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
     private fun startRecordingButtonPressed() {
         startAudioRecording()
         recordButton.visibility = View.INVISIBLE
+        recordCaption.visibility = View.INVISIBLE
         recordingProgress.visibility = View.VISIBLE
         recordingProgressHint.visibility = View.VISIBLE
         recordingProgressHint.text = "Say '${sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()}'"
@@ -109,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         Handler().postDelayed({
             resultIcon.visibility = View.GONE
             recordButton.visibility = View.VISIBLE
+            recordCaption.visibility = View.VISIBLE
         }, 2500)
     }
 }
