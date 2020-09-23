@@ -6,9 +6,12 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -36,9 +39,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         speechRecognizer.setRecognitionListener(speechRecognizerIntent)
 
-        settingsButton.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+        setSupportActionBar(toolbar)
+
+
+        val hasShownTutorial = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hasShownTutorial", false)
+        if (!hasShownTutorial) {
+            val intent = Intent(this, IntroductionActivity::class.java)
+            intent.putExtra("startSelectCodewordActivity", true)
+            startActivity(intent)
+            finish()
         }
+
+
         recordButton.setOnClickListener {
             startRecordingButtonPressed()
         }
@@ -49,6 +61,21 @@ class MainActivity : AppCompatActivity() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), requestAudio)
     }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.menu_changeCodeword -> true.also {  startActivity(Intent(this, SelectCodewordActivity::class.java))}
+            R.id.menu_showIntroduction -> true.also {  startActivity(Intent(this, IntroductionActivity::class.java))}
+            else -> super.onOptionsItemSelected(item)
+        }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -82,6 +109,7 @@ class MainActivity : AppCompatActivity() {
     private fun startRecordingButtonPressed() {
         startAudioRecording()
         recordButton.visibility = View.INVISIBLE
+        recordCaption.visibility = View.INVISIBLE
         recordingProgress.visibility = View.VISIBLE
         recordingProgressHint.visibility = View.VISIBLE
         recordingProgressHint.text = "Say '${sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()}'"
@@ -98,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         Handler().postDelayed({
             resultIcon.visibility = View.GONE
             recordButton.visibility = View.VISIBLE
+            recordCaption.visibility = View.VISIBLE
         }, 2500)
     }
 }
@@ -113,6 +142,7 @@ class CodeWordListener(val sharedPreferences: SharedPreferences, val onResult: (
     override fun onError(p0: Int) {
         onResult(false)
     }
+
     override fun onResults(p0: Bundle?) {
         val results = (p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) ?: arrayListOf()) as ArrayList<String?>
         val codeword = sharedPreferences.getString("codeword", "kiwi")!!.toLowerCase()

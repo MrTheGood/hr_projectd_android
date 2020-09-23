@@ -19,7 +19,7 @@ android {
         applicationId = "nl.hr.projectrage"
 
         versionCode = 1
-        versionName = "1.0"
+        versionName = "2.0"
 
         vectorDrawables.useSupportLibrary = true
     }
@@ -45,11 +45,13 @@ android {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}")
 
-    implementation("androidx.core:core-ktx:1.3.0")
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+    implementation("androidx.core:core-ktx:1.3.1")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.1")
 
-    implementation("com.google.android.material:material:1.1.0")
+    implementation("com.google.android.material:material:1.2.1")
 
-    testImplementation("junit:junit:4.12")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    testImplementation("junit:junit:4.13")
 }
