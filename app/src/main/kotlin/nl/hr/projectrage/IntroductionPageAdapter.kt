@@ -31,6 +31,7 @@ class IntroductionPageAdapter : RecyclerView.Adapter<ViewHolder>() {
                 circleTextView.text = "Wat is ProjectRage?"
                 bodyText.text ="""
                     ProjectRage is een experimentele app om uit te zoeken wat goede codewoorden zijn om te gebruiken.
+                    Als er een aantal goede codewoorden zijn gevonden, zullen deze worden gebruikt bij een mogelijke vervolg app ontwikkeld door MaxedGuardian.
                     
                     Een goed codewoord is altijd goed herkenbaar als het wordt geroepen, maar geeft geen vals alarm tijdens een normaal gesprek.
                 """.trimIndent()

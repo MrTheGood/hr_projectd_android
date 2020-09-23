@@ -19,7 +19,7 @@ android {
         applicationId = "nl.hr.projectrage"
 
         versionCode = 1
-        versionName = "1.0"
+        versionName = "2.0"
 
         vectorDrawables.useSupportLibrary = true
     }
