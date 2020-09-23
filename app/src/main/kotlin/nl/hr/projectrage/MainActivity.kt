@@ -10,6 +10,8 @@ import android.preference.PreferenceManager
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -37,19 +39,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         speechRecognizer.setRecognitionListener(speechRecognizerIntent)
 
+        setSupportActionBar(toolbar)
+
 
         val hasShownTutorial = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hasShownTutorial", false)
         if (!hasShownTutorial) {
-            val intent = Intent(this, OnboardingActivity::class.java)
-            intent.putExtra("startMainActivity", true)
+            val intent = Intent(this, IntroductionActivity::class.java)
+            intent.putExtra("startSelectCodewordActivity", true)
             startActivity(intent)
             finish()
         }
 
 
-        settingsButton.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
         recordButton.setOnClickListener {
             startRecordingButtonPressed()
         }
@@ -60,6 +61,21 @@ class MainActivity : AppCompatActivity() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), requestAudio)
     }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.menu_changeCodeword -> true.also {  startActivity(Intent(this, SelectCodewordActivity::class.java))}
+            R.id.menu_showIntroduction -> true.also {  startActivity(Intent(this, IntroductionActivity::class.java))}
+            else -> super.onOptionsItemSelected(item)
+        }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

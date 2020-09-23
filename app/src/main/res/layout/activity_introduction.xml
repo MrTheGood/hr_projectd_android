@@ -8,13 +8,13 @@
 
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/onboardingPager"
+        android:id="@+id/introductionPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/onboardingSkipButton"
+        android:id="@+id/introductionSkipButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/onboardingNextButton"
+        android:id="@+id/introductionNextButton"
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
