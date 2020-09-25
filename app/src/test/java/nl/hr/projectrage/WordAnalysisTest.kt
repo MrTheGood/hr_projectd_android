@@ -1,24 +1,168 @@
 package nl.hr.projectrage
 
+import android.content.res.Resources
+import androidx.appcompat.app.AppCompatActivity
+import org.junit.Ignore
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Created by maartendegoede on 11/06/2020.
  * Copyright © 2020 Maarten de Goede. All rights reserved.
  */
-class WordAnalysisTest {
+class WordAnalysisTest : AppCompatActivity() {
 
-    @Test
-    fun divideIntoSyllables() {
+    @Test @Ignore
+    fun testScores() {
+        var wordAnalysis = WordAnalysis(resources);
+        for (word in wordenLijst) {
+            println(word + "\t : " + wordAnalysis.calcScore(word));
+        }
     }
 
-    @Test
-    fun divideIntoWords() {
-    }
-
-    @Test
-    fun divideIntoPhonetics() {
-    }
+    val wordenLijst = listOf(
+        "pen",
+        "pannenkoek",
+        "peter",
+        "paard",
+        "beter",
+        "baat",
+        "bonk",
+        "bever",
+        "truck",
+        "teef",
+        "trekveer",
+        "teek",
+        "tamelijk",
+        "doek",
+        "desktop",
+        "deventer",
+        "dennis",
+        "dom",
+        "drank",
+        "direct",
+        "circus",
+        "cake",
+        "cavia",
+        "cijfer",
+        "chinees",
+        "kip",
+        "kucht",
+        "koelbox",
+        "ketchup",
+        "koplap",
+        "giros",
+        "gegevens",
+        "generaal",
+        "glas",
+        "guppie",
+        "quad",
+        "quote",
+        "meter",
+        "milliter",
+        "man",
+        "melk",
+        "mazzel",
+        "niks",
+        "nacht",
+        "nieuws",
+        "nicht",
+        "natuur",
+        "raam",
+        "rug",
+        "richel",
+        "regen",
+        "rauw",
+        "floppy",
+        "faxen",
+        "filmpje",
+        "fysiek",
+        "flauw",
+        "veter",
+        "vis",
+        "vijf",
+        "volgende",
+        "verwacht",
+        "vocht",
+        "sadist",
+        "sex",
+        "schijf",
+        "spambox",
+        "slijm",
+        "jacht",
+        "jazz",
+        "jurk",
+        "jezelf",
+        "joystick",
+        "homo",
+        "help",
+        "half",
+        "hallo",
+        "hobby",
+        "hetro",
+        "xellofoon",
+        "school",
+        "schuld",
+        "schild",
+        "schuin",
+        "schim",
+        "sjoelen",
+        "sjap",
+        "sjoerd",
+        "sjauw",
+        "sjalot",
+        "sjerp",
+        "irritant",
+        "inkt",
+        "iglo",
+        "integer",
+        "iers",
+        "yang",
+        "yoga",
+        "youtube",
+        "yoghurt",
+        "u",
+        "uur",
+        "ui",
+        "urine",
+        "uniek",
+        "uberhaupt",
+        "echt",
+        "erom",
+        "emmer",
+        "elmo",
+        "eet",
+        "een",
+        "oma",
+        "op",
+        "opa",
+        "ohm",
+        "oog",
+        "oksel",
+        "aan",
+        "anus",
+        "aap",
+        "afbeelding",
+        "aaien",
+        "alle",
+        "augustus",
+        "euro",
+        "eureka",
+        "eutenasie",
+        "uit",
+        "uiers",
+        "uil",
+        "uhm",
+        "ohm",
+        "chemo",
+        "chili",
+        "choco",
+        "chrome",
+        "check",
+        "naar",
+        "naat",
+        "nadat",
+        "napalm",
+        "nagel",
+        "naties"
+    )
 }

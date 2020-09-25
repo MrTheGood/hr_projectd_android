@@ -24,6 +24,11 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.isReturnDefaultValues = true
+    }
+
     buildTypes {
         getByName("debug") {
             isDebuggable = true
@@ -52,4 +57,6 @@ dependencies {
     implementation("com.google.android.material:material:1.1.0")
 
     testImplementation("junit:junit:4.12")
+    testImplementation("androidx.test:core:1.0.0")
+    testImplementation("org.mockito:mockito-core:1.10.19")
 }

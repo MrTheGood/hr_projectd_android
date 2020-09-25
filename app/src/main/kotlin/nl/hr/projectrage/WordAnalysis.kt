@@ -66,8 +66,26 @@ class WordAnalysis(res: Resources) {
         return syllables
     }
 
-    private fun divideIntoWords(word: String) =
-        dictionary.filter { word.contains(it) }
+    private fun divideIntoWords(word: String): List<String> {
+        var shortList = dictionary.filter {
+            word.contains(it)
+        }
+        if (shortList.size > 1){
+            shortList = shortList.filter { !it.equals(word) }
+            shortList = shortList.filter { og ->
+                for (it in shortList) {
+                    if(!og.equals(it) && og.contains(it)){
+                        return@filter true;
+                    }
+                }
+                return@filter false;
+            }
+        }
+        if(shortList.isEmpty()){
+            return listOf(word)
+        }
+        return shortList;
+    }
 
     private fun divideIntoPhonetics(syllables: List<String>): List<Klanken> {
         val phonetics = ArrayList<Klanken>()
@@ -81,7 +99,7 @@ class WordAnalysis(res: Resources) {
         return phonetics
     }
 
-    private fun calcScore(word: String): Double {
+    fun calcScore(word: String): Double {
         val syllables = divideIntoSyllables(word)
         val phonetics = divideIntoPhonetics(syllables)
         val totalPoints = phonetics.sumBy { it.score }.toDouble()
@@ -109,40 +127,37 @@ data class Klanken(
 )
 
 val klankenList = listOf(
-    Klanken("p", "p", 30),
-    Klanken("b", "b", 40),
-    Klanken("t", "t", 72),
-    Klanken("d", "d", 80),
-    Klanken("c", "c", 50),
-    Klanken("k", "k", 100),
-    Klanken("g", "g", 85),
-    Klanken("q", "q", 81),
-    Klanken("m", "m", 74),
-    Klanken("n", "n", 85),
-    Klanken("r", "r", 78),
-    Klanken("f", "f", 30),
-    Klanken("v", "v", 70),
-    Klanken("s", "s", 50),
-    Klanken("j", "j", 80),
-    Klanken("h", "h", 86),
-    Klanken("X", "ch", 90),
-    Klanken("esh", "sch", 87),
-    Klanken("ezh", "sj", 74),
-    Klanken("stemloze_retroflexe_fricatief", "sj", 74),
-    Klanken("Stemhebbende_palatale_fricatief", "j", 80),
-    Klanken("i", "i", 40),
-    Klanken("y", "y", 69),
-    Klanken("u", "u", 75),
-    Klanken("e", "e", 85),
-    Klanken("o", "o", 71),
-    Klanken("a", "a", 86),
-    Klanken("Y", "eu", 86),
-    Klanken("Open-mid_central_unrounded_vowel", "ui", 76),
-    Klanken("Open-mid_back_unrounded_vowel", "ah", 89),
-    Klanken("ä", "uh", 72),
-    Klanken("Open_back_rounded_vowel", "oh", 50),
-    Klanken("ç", "ch", 90),
-    Klanken("ɳ", "na", 70)
+    Klanken("p", "p", 76),
+    Klanken("b", "b", 45),
+    Klanken("t", "t", 53),
+    Klanken("d", "d", 72),
+    Klanken("c", "c", 73),
+    Klanken("k", "k", 63),
+    Klanken("g", "g", 54),
+    Klanken("q", "q", 8),
+    Klanken("m", "m", 67),
+    Klanken("n", "n", 79),
+    Klanken("r", "r", 76),
+    Klanken("f", "f", 73),
+    Klanken("v", "v", 62),
+    Klanken("s", "s", 66),
+    Klanken("j", "j", 88),
+    Klanken("h", "h", 62),
+    Klanken("X", "x", 10),
+    Klanken("esh", "sch", 69),
+    Klanken("ezh", "sj", 53),
+    Klanken("i", "i", 97),
+    Klanken("y", "y", 63),
+    Klanken("u", "u", 77),
+    Klanken("e", "e", 82),
+    Klanken("o", "o", 87),
+    Klanken("a", "a", 76),
+    Klanken("Y", "eu", 89),
+    Klanken("Open-mid_central_unrounded_vowel", "ui", 61),
+    Klanken("ä", "uh", 93),
+    Klanken("Open_back_rounded_vowel", "oh", 83),
+    Klanken("ç", "ch", 86),
+    Klanken("ɳ", "na", 85)
 )
 
 fun List<Klanken>.toPhoneticsRegexPattern() =
